@@ -1,6 +1,7 @@
+import "reflect-metadata";
 import express from "express";
 import dotenv from "dotenv";
-import { router } from "./routes";
+import { configureRoutes } from "./routes";
 dotenv.config();
 export const app = express();
 
@@ -8,4 +9,4 @@ export const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); //parse incoming requests with urlencoded payloads
 
-app.use("/", router);
+app.use("/", configureRoutes(app));

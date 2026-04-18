@@ -1,4 +1,4 @@
-import { AppDataSource } from "./data-source";
+import { AppDataSource } from "./dataSource";
 
 export const connectDB = async () => {
   try {
