@@ -2,22 +2,37 @@ import { Router } from "express";
 import Container from "typedi";
 import express, { Express } from "express";
 import { CakeController } from "./controllers/cakeController";
-import path from "path";
-import { appConfig } from "./appConfig";
+import * as path from "path";
+import { ConfigService } from "./services/core/configService";
+import { Controller } from "./controllers/controller";
 
 export const configureRoutes = (app: Express) => {
-    app.use("/storage", express.static(path.join(process.cwd(), appConfig.storage.directory)));
-    const router = Router();
+  const configService = Container.get(ConfigService);
+  app.use(
+    "/storage",
+    express.static(
+      path.join(process.cwd(), configService.getAppConfig().storage.directory),
+    ),
+  );
 
-const cakeController = Container.get(CakeController);
+  const router = Router();
 
-router.get('/', async (req, res) => {
+  const cakeController = Container.get(CakeController);
+
+  router.get("/", async (req, res) => {
     return res.status(200).json({ message: "Hello World" });
-});
+  });
 
-router.post("/cakes", cakeController.uploadImagesMiddleware, cakeController.createOne);
+  router.post(
+    "/cakes",
+    cakeController.uploadImagesMiddleware,
+    Controller.asyncRequestHandler(cakeController.createOne),
+  );
 
-router.get("/cakes", cakeController.findMany);
+  router.get("/cakes", cakeController.findMany);
 
-return router;
-}
+  app.use(router);
+
+  // ✅ THEN error handler LAST
+  app.use(Controller.globalErrorHandler);
+};

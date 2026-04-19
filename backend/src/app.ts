@@ -9,4 +9,4 @@ export const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); //parse incoming requests with urlencoded payloads
 
-app.use("/", configureRoutes(app));
+configureRoutes(app);
