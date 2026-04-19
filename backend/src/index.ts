@@ -1,8 +1,7 @@
-import { app } from './app';
-import { connectDB } from './database';
+import { initApp } from './app';
 
 const start = async () => {
-  await connectDB();
+  const app = await initApp();
 
   app.listen(3000, () => {
     console.log('Server running on http://localhost:3000');

@@ -35,7 +35,6 @@ const saveCakeReqDtoSchema = z
     ),
   })
   .strict();
-
 @Service()
 export class CakeController extends Controller {
   constructor(
@@ -142,7 +141,7 @@ export class CakeController extends Controller {
     });
     return res.status(200).json({
       ...paginatedResult,
-      data: paginatedResult.data.map(toCakeResDto),
+      items: paginatedResult.items.map(toCakeResDto),
     });
   };
 

@@ -34,8 +34,10 @@ export class CakeService {
     page: number;
     recordsPerPage: number;
   }): Promise<{
-    data: Cake[];
-    total: number;
+    items: Cake[];
+    page: number;
+    recordsPerPage: number;
+    totalItems: number;
     totalPages: number;
   }> {
     const qb = this.cakeRepo
@@ -49,9 +51,11 @@ export class CakeService {
     const [data, total] = await qb.getManyAndCount();
     const totalPages = Math.ceil(total / recordsPerPage);
     return {
-      data,
-      total,
+      items: data,
+      totalItems: total,
       totalPages,
+      page,
+      recordsPerPage,
     };
   }
 

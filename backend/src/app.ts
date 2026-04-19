@@ -1,12 +1,20 @@
 import 'reflect-metadata';
 import express from 'express';
-import dotenv from 'dotenv';
 import { configureRoutes } from './routes';
-dotenv.config();
-export const app = express();
+import { initializeDatabase } from './dataSource';
+import { initDotenv } from './env';
+initDotenv();
 
-//use express.json() to parse incoming requests with JSON payloads
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); //parse incoming requests with urlencoded payloads
+export const initApp = async () => {
+  const app = express();
 
-configureRoutes(app);
+  //use express.json() to parse incoming requests with JSON payloads
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true })); //parse incoming requests with urlencoded payloads
+
+  await initializeDatabase();
+
+  configureRoutes(app);
+
+  return app;
+};
