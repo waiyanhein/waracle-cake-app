@@ -155,4 +155,25 @@ export class CakeService {
       throw error;
     }
   }
+
+  public async deleteOne(id: number): Promise<void> {
+    await AppDataSource.transaction(async () => {
+      await this.cakeRepo.delete(id);
+      const preExistingImages = await this.cakeImageRepo.find({
+        where: {
+          cakeId: id,
+        },
+      });
+      await this.cakeImageRepo.delete({
+        cakeId: id,
+      });
+      if (preExistingImages.length) {
+        const unlinkPromises: Promise<void>[] = [];
+        for (const image of preExistingImages) {
+          unlinkPromises.push(unlink(image.path));
+        }
+        await Promise.all(unlinkPromises);
+      }
+    });
+  }
 }

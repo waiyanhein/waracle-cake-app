@@ -123,9 +123,7 @@ export class CakeController extends Controller {
         imagePaths = req.files.imageFiles?.map((f) => f.path) ?? [];
       }
     }
-    console.log(`Before validation`);
     const reqDto = saveCakeReqDtoSchema.parse(req.body);
-    console.log(`After validation`);
     await this.cakeService.updateOne(id, {
       name: reqDto.name,
       comment: reqDto.comment,
@@ -146,5 +144,22 @@ export class CakeController extends Controller {
       ...paginatedResult,
       data: paginatedResult.data.map(toCakeResDto),
     });
+  };
+
+  public deleteOne = async (req: Request, res: Response) => {
+    const inputId = req.params.id;
+    if (isNil(inputId) || typeof inputId !== 'string') {
+      return res.status(400).json({ message: 'Invalid ID' });
+    }
+    const id = Number(inputId);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: 'Id must be a number' });
+    }
+    const cake = await this.cakeService.findOne(id);
+    if (isNil(cake)) {
+      return res.status(404).json({ message: 'Cake not found' });
+    }
+    await this.cakeService.deleteOne(id);
+    return res.status(200).json({ message: 'Cake deleted successfully' });
   };
 }

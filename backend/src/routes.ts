@@ -33,10 +33,10 @@ export const configureRoutes = (app: Express) => {
     Controller.asyncRequestHandler(cakeController.updateOne),
   );
 
-  router.get('/cakes', cakeController.findMany);
+  router.get('/cakes', Controller.asyncRequestHandler(cakeController.findMany));
+  router.delete('/cakes/:id', Controller.asyncRequestHandler(cakeController.deleteOne));
 
   app.use(router);
 
-  // ✅ THEN error handler LAST
   app.use(Controller.globalErrorHandler);
 };
