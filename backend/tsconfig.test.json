@@ -1,0 +1,9 @@
+{
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+      "rootDirs": ["src", "test"],
+      "noEmit": true,
+      "types": ["jest"]
+    },
+    "include": ["test", "src"],
+  }
