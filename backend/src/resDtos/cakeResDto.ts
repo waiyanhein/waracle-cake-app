@@ -1,6 +1,6 @@
-import Container from "typedi";
-import { Cake } from "../entities/cake";
-import { StorageService } from "../services/core/storageService";
+import Container from 'typedi';
+import { Cake } from '../entities/cake';
+import { StorageService } from '../services/core/storageService';
 
 export type CakeResDto = {
   id: number;

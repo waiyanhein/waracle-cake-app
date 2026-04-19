@@ -1,13 +1,7 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from "typeorm";
-import { Cake } from "./cake";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Cake } from './cake';
 
-@Entity("cake_images")
+@Entity('cake_images')
 export class CakeImage {
   @PrimaryGeneratedColumn()
   id!: number;
@@ -15,12 +9,12 @@ export class CakeImage {
   @Column({ length: 255 })
   path!: string;
 
-  @Column({ name: "cake_id" })
+  @Column({ name: 'cake_id' })
   cakeId!: number;
 
   @ManyToOne(() => Cake, (cake) => cake.images, {
-    onDelete: "CASCADE",
+    onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: "cake_id" })
+  @JoinColumn({ name: 'cake_id' })
   cake!: Cake;
 }

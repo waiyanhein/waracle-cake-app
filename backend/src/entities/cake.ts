@@ -1,13 +1,7 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  Check,
-  OneToMany,
-} from "typeorm";
-import { CakeImage } from "./cakeImage";
+import { Entity, PrimaryGeneratedColumn, Column, Check, OneToMany } from 'typeorm';
+import { CakeImage } from './cakeImage';
 
-@Entity("cakes")
+@Entity('cakes')
 @Check(`"yumFactor" >= 1 AND "yumFactor" <= 10`)
 export class Cake {
   @PrimaryGeneratedColumn() // 👈 default = increment
@@ -23,7 +17,7 @@ export class Cake {
   })
   comment!: string;
 
-  @Column({ type: "int", name: "yum_factor" })
+  @Column({ type: 'int', name: 'yum_factor' })
   yumFactor!: number;
 
   @OneToMany(() => CakeImage, (image) => image.cake)

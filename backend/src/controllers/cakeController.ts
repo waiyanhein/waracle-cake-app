@@ -1,37 +1,37 @@
-import { Service } from "typedi";
-import { CakeService } from "../services/domain/cakeService";
-import { Request, Response } from "express";
-import { isNil } from "lodash";
-import { Controller } from "./controller";
-import { extname } from "path";
-import { CryptoService } from "../services/core/cryptoService";
-import { z } from "zod";
-import { FileUploadError } from "../errors/fileUploadError";
-import { toCakeResDto } from "../resDtos/cakeResDto";
+import { Service } from 'typedi';
+import { CakeService } from '../services/domain/cakeService';
+import { Request, Response } from 'express';
+import { isNil } from 'lodash';
+import { Controller } from './controller';
+import { extname } from 'path';
+import { CryptoService } from '../services/core/cryptoService';
+import { z } from 'zod';
+import { FileUploadError } from '../errors/fileUploadError';
+import { toCakeResDto } from '../resDtos/cakeResDto';
 
-const createCakeReqDtoSchema = z
+const saveCakeReqDtoSchema = z
   .object({
     name: z
       .string()
       .trim()
-      .min(1, { message: "Name is required" })
-      .max(30, { message: "Name must be max 30 characters" }),
+      .min(1, { message: 'Name is required' })
+      .max(30, { message: 'Name must be max 30 characters' }),
     comment: z
       .string()
       .trim()
-      .min(1, { message: "Comment is required" })
-      .max(200, { message: "Comment must be max 200 characters" }),
+      .min(1, { message: 'Comment is required' })
+      .max(200, { message: 'Comment must be max 200 characters' }),
     yumFactor: z.preprocess(
       (val) => {
-        if (typeof val === "string") {
+        if (typeof val === 'string') {
           return Number(val.trim());
         }
         return val;
       },
       z
         .number()
-        .min(1, { message: "Yum factor is required" })
-        .max(10, { message: "Yum factor must be max 10" }),
+        .min(1, { message: 'Yum factor is required' })
+        .max(10, { message: 'Yum factor must be max 10' }),
     ),
   })
   .strict();
@@ -46,31 +46,48 @@ export class CakeController extends Controller {
   }
 
   public uploadImagesMiddleware = this.configureUploadMiddleware({
-    fields: [{ name: "imageFiles", maxCount: 5 }],
+    fields: [{ name: 'imageFiles', maxCount: 1 }],
     filenameHandler: (req, file, cb) => {
       const uniqueName = this.cryptoService.generateUuid();
       const extension = extname(file.originalname);
       cb(null, `${uniqueName}${extension}`);
     },
     fileFilterHandler: (req, file, cb) => {
-      if (!file.mimetype.startsWith("image/")) {
+      if (!file.mimetype.startsWith('image/')) {
         return cb(
           new FileUploadError({
-            field: "imageFiles",
-            error: "Files must be images",
+            field: 'imageFiles',
+            error: 'Files must be images',
           }),
         );
       }
+
       cb(null, true);
     },
   });
 
   public createOne = async (req: Request, res: Response) => {
     let imagePaths: string[] = [];
-    if (!isNil(req.files) && !Array.isArray(req.files)) {
-      imagePaths = req.files.imageFiles.map((f) => f.path);
+    if (isNil(req.files)) {
+      throw this.buildRequestValidationError({
+        field: 'imageFiles',
+        error: 'Image files are required',
+      });
     }
-    const reqDto = createCakeReqDtoSchema.parse(req.body);
+    if (Array.isArray(req.files)) {
+      throw this.buildRequestValidationError({
+        field: 'imageFiles',
+        error: 'Invalid format',
+      });
+    }
+    if (!req.files.imageFiles.length) {
+      throw this.buildRequestValidationError({
+        field: 'imageFiles',
+        error: 'Image files are required',
+      });
+    }
+    imagePaths = req.files.imageFiles.map((f) => f.path);
+    const reqDto = saveCakeReqDtoSchema.parse(req.body);
     await this.cakeService.createOne({
       name: reqDto.name,
       comment: reqDto.comment,
@@ -78,7 +95,44 @@ export class CakeController extends Controller {
       imagePaths: imagePaths,
     });
 
-    return res.status(201).json({ message: "Cake created successfully" });
+    return res.status(201).json({ message: 'Cake created successfully' });
+  };
+
+  public updateOne = async (req: Request, res: Response) => {
+    const inputId = req.params.id;
+    if (isNil(inputId) || typeof inputId !== 'string') {
+      return res.status(400).json({ message: 'Invalid ID' });
+    }
+    const id = Number(inputId);
+    if (isNaN(id)) {
+      return res.status(400).json({ message: 'Id must be a number' });
+    }
+    const cake = await this.cakeService.findOne(id);
+    if (isNil(cake)) {
+      return res.status(404).json({ message: 'Cake not found' });
+    }
+    let imagePaths: string[] = [];
+    if (!isNil(req.files)) {
+      if (Array.isArray(req.files)) {
+        throw this.buildRequestValidationError({
+          field: 'imageFiles',
+          error: 'Invalid format',
+        });
+      }
+      if (!isNil(req.files.imageFiles) && req.files.imageFiles?.length) {
+        imagePaths = req.files.imageFiles?.map((f) => f.path) ?? [];
+      }
+    }
+    console.log(`Before validation`);
+    const reqDto = saveCakeReqDtoSchema.parse(req.body);
+    console.log(`After validation`);
+    await this.cakeService.updateOne(id, {
+      name: reqDto.name,
+      comment: reqDto.comment,
+      yumFactor: reqDto.yumFactor,
+      imagePaths,
+    });
+    return res.status(200).json({ message: 'Cake updated successfully' });
   };
 
   public findMany = async (req: Request, res: Response) => {

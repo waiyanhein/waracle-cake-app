@@ -1,12 +1,12 @@
-import { NextFunction, Request, Response, RequestHandler } from "express";
-import multer from "multer";
-import path from "path";
-import { mkdir } from "fs";
-import { ConfigService } from "../services/core/configService";
-import Container from "typedi";
-import { ZodError, ZodIssue } from "zod";
-import { FileUploadError } from "../errors/fileUploadError";
-import { isNil } from "lodash";
+import { NextFunction, Request, Response, RequestHandler } from 'express';
+import multer from 'multer';
+import path from 'path';
+import { mkdir } from 'fs';
+import { ConfigService } from '../services/core/configService';
+import Container from 'typedi';
+import { ZodError, ZodIssue } from 'zod';
+import { FileUploadError } from '../errors/fileUploadError';
+import { isNil } from 'lodash';
 
 type RequestValidationErrors = Record<string, string[]>;
 
@@ -36,8 +36,7 @@ export class Controller {
     fileFilterHandler,
     fields,
   }: ConfigureUploadMiddlewareArgs): RequestHandler => {
-    const storageDirectory =
-      this.configService.getAppConfig().storage.directory;
+    const storageDirectory = this.configService.getAppConfig().storage.directory;
 
     const storage = multer.diskStorage({
       destination: (req, file, cb) => {
@@ -45,7 +44,7 @@ export class Controller {
         const uploadPath = path.join(
           storageDirectory,
           now.getFullYear().toString(),
-          String(now.getMonth() + 1).padStart(2, "0"),
+          String(now.getMonth() + 1).padStart(2, '0'),
         );
 
         mkdir(uploadPath, { recursive: true }, (err) => {
@@ -72,34 +71,20 @@ export class Controller {
     };
   };
 
-  protected buildRequestValidationError = ({
-    field,
-    error,
-  }: {
-    field: string;
-    error: string;
-  }) => {
+  protected buildRequestValidationError = ({ field, error }: { field: string; error: string }) => {
     return new ZodError([
       {
         path: [field],
         message: error,
-        code: "custom",
+        code: 'custom',
       },
     ]);
   };
 
   public static asyncRequestHandler = (
-    fn: (
-      req: Request,
-      res: Response,
-      next: NextFunction,
-    ) => Promise<Response | void>,
+    fn: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>,
   ): RequestHandler => {
-    return async (
-      wrapperReq: Request,
-      wrapperRes: Response,
-      wrapperNext: NextFunction,
-    ) => {
+    return async (wrapperReq: Request, wrapperRes: Response, wrapperNext: NextFunction) => {
       try {
         await fn(wrapperReq, wrapperRes, wrapperNext);
       } catch (e) {
@@ -112,9 +97,9 @@ export class Controller {
     const resErrors: RequestValidationErrors = {};
 
     for (const fieldError of error) {
-      let fieldName = fieldError.path.join(".");
+      let fieldName = fieldError.path.join('.');
       if (!fieldName) {
-        fieldName = "unknown";
+        fieldName = 'unknown';
       }
       if (isNil(resErrors[fieldName])) {
         resErrors[fieldName] = [];
@@ -126,9 +111,10 @@ export class Controller {
   };
 
   public static globalErrorHandler = (
-    error: Error,
-    req: Request,
+    error: unknown,
+    rreq: Request,
     res: Response,
+    next: NextFunction,
   ) => {
     if (error instanceof FileUploadError) {
       const errors: RequestValidationErrors = {
@@ -138,10 +124,13 @@ export class Controller {
     }
 
     if (error instanceof ZodError) {
-      return res
-        .status(422)
-        .json({ errors: this.resolveZodError(error.issues) });
+      return res.status(422).json({ errors: this.resolveZodError(error.issues) });
     }
-    return res.status(500).json({ error: `Opps! Something went wrong.` });
+
+    if (error instanceof Error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    return next(error);
   };
 }

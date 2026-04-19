@@ -1,11 +1,11 @@
-import { AppDataSource } from "./dataSource";
+import { AppDataSource } from './dataSource';
 
 export const connectDB = async () => {
   try {
     await AppDataSource.initialize();
-    console.log("DB connected");
+    console.log('DB connected');
   } catch (error) {
-    console.error("DB connection failed", error);
+    console.error('DB connection failed', error);
     process.exit(1);
   }
 };

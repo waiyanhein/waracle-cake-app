@@ -1,5 +1,5 @@
-import { Service } from "typedi";
-import { ConfigService } from "./configService";
+import { Service } from 'typedi';
+import { ConfigService } from './configService';
 
 @Service()
 export class StorageService {
