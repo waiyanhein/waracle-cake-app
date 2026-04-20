@@ -79,7 +79,7 @@ export class CakeController extends Controller {
         error: 'Invalid format',
       });
     }
-    if (!req.files.imageFiles.length) {
+    if (!req.files.imageFiles?.length) {
       throw this.buildRequestValidationError({
         field: 'imageFiles',
         error: 'Image is required',

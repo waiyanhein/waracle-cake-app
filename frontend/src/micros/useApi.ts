@@ -2,6 +2,20 @@ import { isNil } from 'lodash';
 import type { CakeFindManyResDto } from '../resDtos/cakeFindManyResDto';
 import { useConfig } from './useConfig';
 
+export type ApiValidationErrorResponse<T = Record<string, string[]>> = {
+  errors: T;
+};
+
+export class ApiValidationError<T = Record<string, string[]>> extends Error {
+  response: ApiValidationErrorResponse<T>;
+
+  constructor(response: ApiValidationErrorResponse<T>) {
+    super('Server side validation error');
+    this.name = 'ApiValidationError';
+    this.response = response;
+  }
+}
+
 export const useApi = () => {
   const { getAppConfig } = useConfig();
 
@@ -31,12 +45,15 @@ export const useApi = () => {
         const responseData = await response.json();
         return responseData;
       } else if (response.status === 422) {
-        // validation error
-        throw new Error(`Server side validation error`);
+        const responseData: ApiValidationErrorResponse = await response.json();
+        throw new ApiValidationError(responseData);
       } else {
         throw new Error(`Server error`);
       }
     } catch (e) {
+      /**
+       * @TODO - Do somthing with the error. Eg: log this to Sentry, CloudWatch or etc.
+       */
       console.log(e);
       throw e;
     }
@@ -70,7 +87,12 @@ export const useApi = () => {
         path: `/cakes`,
         method: `POST`,
         body: formData,
-        headers: {},
+      });
+    },
+    deleteOne: async (id: number): Promise<void> => {
+      await makeApiRequest({
+        path: `/cakes/${id}`,
+        method: `DELETE`,
       });
     },
   };

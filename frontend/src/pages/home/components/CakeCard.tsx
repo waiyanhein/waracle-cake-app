@@ -1,6 +1,16 @@
 import type { CakeResDto } from '../../../resDtos/cakeResDto';
 
-export const CakeCard = ({ cake }: { cake: CakeResDto }) => {
+export const CakeCard = ({
+  cake,
+  onView,
+  onEdit,
+  onDelete,
+}: {
+  cake: CakeResDto;
+  onView: (cake: CakeResDto) => void;
+  onEdit: (cake: CakeResDto) => void;
+  onDelete: (cake: CakeResDto) => void;
+}) => {
   return (
     <div className="group bg-white/80 backdrop-blur rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:-translate-y-1">
       {/* Image */}
@@ -30,15 +40,24 @@ export const CakeCard = ({ cake }: { cake: CakeResDto }) => {
 
         {/* Actions */}
         <div className="flex justify-end items-center mt-3 gap-3">
-          <button className="text-xs text-blue-500 hover:text-blue-600 transition">
+          <button
+            onClick={() => onView(cake)}
+            className="text-xs text-blue-500 hover:text-blue-600 transition"
+          >
             View
           </button>
 
-          <button className="text-xs text-blue-500 hover:text-blue-600 transition">
+          <button
+            onClick={() => onEdit(cake)}
+            className="text-xs text-blue-500 hover:text-blue-600 transition"
+          >
             Edit
           </button>
 
-          <button className="text-xs text-red-500 hover:text-red-600 transition">
+          <button
+            onClick={() => onDelete(cake)}
+            className="text-xs text-red-500 hover:text-red-600 transition"
+          >
             Delete
           </button>
         </div>

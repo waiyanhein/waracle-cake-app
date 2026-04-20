@@ -7,13 +7,14 @@ const customStyles = {
     zIndex: 999, // 🔥 THIS is the important part
   },
   content: {
-    top: '50%',
+    top: '45%',
     left: '50%',
     right: 'auto',
     bottom: 'auto',
     transform: 'translate(-50%, -50%)',
     borderRadius: '16px',
-    padding: '24px',
+    padding: '0px',
+    border: 'none',
     maxWidth: '500px',
     width: '90%',
   },
@@ -39,6 +40,13 @@ export const PopUpModal = ({
       contentLabel="Example Modal"
     >
       {children}
+      {/* Close button */}
+      <button
+        onClick={onRequestClose}
+        className="absolute top-3 right-3 bg-white/90 backdrop-blur text-xs px-3 py-1 rounded-lg shadow hover:bg-white transition"
+      >
+        ✕
+      </button>
     </Modal>
   );
 };
