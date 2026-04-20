@@ -1,7 +1,6 @@
 import { Service } from 'typedi';
 import { ConfigService } from './configService';
 import { unlink } from 'fs/promises';
-
 @Service()
 export class StorageService {
   constructor(private readonly configService: ConfigService) {}

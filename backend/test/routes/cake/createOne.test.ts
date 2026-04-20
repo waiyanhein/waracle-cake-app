@@ -82,6 +82,7 @@ describe("POST /cakes", () => {
         .attach('imageFiles', path.resolve(__dirname, 'test_image.png'))
         .expect(500);
 
+        expect(deleteFileSpy).toHaveBeenCalledTimes(1);
         expect(deleteFileSpy).toHaveBeenCalledWith(testUploadedImageFilePath);
         expect(existsSync(testUploadedImageFilePath)).toBeFalsy();
     });
@@ -140,7 +141,6 @@ describe("POST /cakes", () => {
             const response = await req
             .attach('imageFiles', path.resolve(__dirname, 'test_image.png'))
             .expect(422);
-            console.log(response.body);
 
             asssertResponseHasValidationError(response, { fieldName, error: expectedError });
         });

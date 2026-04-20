@@ -162,12 +162,13 @@ export class CakeService {
 
   public async deleteOne(id: number): Promise<void> {
     await AppDataSource.transaction(async () => {
-      await this.cakeRepo.delete(id);
+      // @important - retrieve the images first before the cake is deleted.
       const preExistingImages = await this.cakeImageRepo.find({
         where: {
           cakeId: id,
         },
       });
+      await this.cakeRepo.delete(id);
       await this.cakeImageRepo.delete({
         cakeId: id,
       });

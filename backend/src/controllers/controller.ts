@@ -112,7 +112,7 @@ export class Controller {
 
   public static globalErrorHandler = (
     error: unknown,
-    rreq: Request,
+    req: Request,
     res: Response,
     next: NextFunction,
   ) => {
