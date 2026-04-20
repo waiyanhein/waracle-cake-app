@@ -57,7 +57,7 @@ export class Controller {
 
     const upload = multer({
       storage,
-      limits: { fileSize: 12 * 1024 * 1024 }, // 12MB
+      limits: { fileSize: 1024 * 1024 * 1024 }, // 1024MB
       fileFilter: fileFilterHandler,
     });
 

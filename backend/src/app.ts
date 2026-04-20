@@ -3,14 +3,24 @@ import express from 'express';
 import { configureRoutes } from './routes';
 import { initializeDatabase } from './dataSource';
 import { initDotenv } from './env';
+import cors from 'cors';
 initDotenv();
 
 export const initApp = async () => {
   const app = express();
 
-  //use express.json() to parse incoming requests with JSON payloads
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true })); //parse incoming requests with urlencoded payloads
+  app.use(
+    cors({
+      /**
+       * @TODO - restrict. Create an enviroment variable for whitelisted domains.
+       */
+      origin: '*',
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    }),
+  );
+  app.use(express.json({ limit: "50mb" }));
+  app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
   await initializeDatabase();
 

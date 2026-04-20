@@ -1,52 +1,63 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React from 'react';
+import { ToastContainer } from 'react-toastify';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ErrorBoundary } from 'react-error-boundary';
+import { HomePage } from './pages/home/HomePage';
+import { ScreenLoaderProvider } from './contexts/ScreenLoader';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      retry: 3,
+      refetchOnWindowFocus: false,
+      enabled: true,
+      throwOnError: true,
+    },
+  },
+});
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div className="min-h-screen bg-gray-50">
-  {/* Header */}
-  <header className="sticky top-0 z-10 bg-white border-b">
-    <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-      <h1 className="text-2xl font-semibold">🍰 Cake Gallery</h1>
-      <button className="bg-black text-white px-4 py-2 rounded-xl hover:opacity-90">
-        + Add Cake
-      </button>
-    </div>
-  </header>
+    <ErrorBoundary
+      fallbackRender={({ error }) => {
+        let errorMessage = 'Something went wrong';
+        // if (error instanceof ApiError) {
+        //   errorMessage = error.error;
+        // } else if (error instanceof Error) {
+        //   errorMessage = error.message;
+        // }
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        }
 
-  {/* Grid */}
-  <main className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-    {/* Card */}
-    <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition overflow-hidden">
-      <img
-        src="https://source.unsplash.com/400x300/?cake"
-        className="w-full h-48 object-cover"
-      />
-
-      <div className="p-4">
-        <h2 className="font-semibold text-lg">Chocolate Cake</h2>
-        <p className="text-sm text-gray-500 line-clamp-2">
-          Rich and creamy chocolate cake...
-        </p>
-
-        <div className="flex justify-between items-center mt-4">
-          <span className="text-yellow-500">★★★★★</span>
-          <button className="text-red-500 text-sm hover:underline">
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
-  </main>
-</div>
-    </>
-  )
+        /**
+         * @todo - prettify
+         */
+        return (
+          <div>
+            <p>{errorMessage}</p>
+            <button
+              onClick={() => {
+                window.location.reload();
+              }}
+            >
+              Reload
+            </button>
+          </div>
+        );
+      }}
+    >
+      <React.Suspense fallback={<div>Loading...</div>}>
+        <QueryClientProvider client={queryClient}>
+          <ScreenLoaderProvider>
+            <HomePage />
+            <ToastContainer />
+          </ScreenLoaderProvider>
+        </QueryClientProvider>
+      </React.Suspense>
+    </ErrorBoundary>
+  );
 }
 
-export default App
+export default App;
