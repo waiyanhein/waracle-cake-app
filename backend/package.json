@@ -36,6 +36,7 @@
     "jest": "^30.3.0",
     "prettier": "^3.8.3",
     "supertest": "^7.2.2",
+    "timekeeper": "^2.3.1",
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",

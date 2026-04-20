@@ -3,14 +3,14 @@ import { AppDataSource } from '../../dataSource';
 import { Cake } from '../../entities/cake';
 import { Service } from 'typedi';
 import { CakeImage } from '../../entities/cakeImage';
-import { unlink } from 'fs/promises';
 import { isNil } from 'lodash';
+import { StorageService } from '../core/storageService';
 @Service()
 export class CakeService {
   private cakeRepo: Repository<Cake>;
   private cakeImageRepo: Repository<CakeImage>;
 
-  constructor() {
+  constructor(private readonly storageService: StorageService) {
     this.cakeRepo = AppDataSource.getRepository(Cake);
     this.cakeImageRepo = AppDataSource.getRepository(CakeImage);
   }
@@ -92,7 +92,7 @@ export class CakeService {
       if (data.imagePaths.length) {
         await Promise.all(
           data.imagePaths.map(async (path) => {
-            await unlink(path);
+            await this.storageService.deleteFile(path);
           }),
         );
       }
@@ -141,20 +141,20 @@ export class CakeService {
       });
 
       if (cake.images.length) {
-        const unlinkPromises: Promise<void>[] = [];
+        const deleteFilePromises: Promise<void>[] = [];
         for (const image of cake.images) {
-          unlinkPromises.push(unlink(image.path));
+          deleteFilePromises.push(this.storageService.deleteFile(image.path));
         }
-        await Promise.all(unlinkPromises);
+        await Promise.all(deleteFilePromises);
       }
     } catch (error) {
       // delete the uploaded images if something went wrong
       if (data.imagePaths.length) {
-        const unlinkPromises: Promise<void>[] = [];
+        const deleteFilePromises: Promise<void>[] = [];
         for (const imagePath of data.imagePaths) {
-          unlinkPromises.push(unlink(imagePath));
+          deleteFilePromises.push(this.storageService.deleteFile(imagePath));
         }
-        await Promise.all(unlinkPromises);
+        await Promise.all(deleteFilePromises);
       }
       throw error;
     }
@@ -172,11 +172,11 @@ export class CakeService {
         cakeId: id,
       });
       if (preExistingImages.length) {
-        const unlinkPromises: Promise<void>[] = [];
+        const deleteFilePromises: Promise<void>[] = [];
         for (const image of preExistingImages) {
-          unlinkPromises.push(unlink(image.path));
+          deleteFilePromises.push(this.storageService.deleteFile(image.path));
         }
-        await Promise.all(unlinkPromises);
+        await Promise.all(deleteFilePromises);
       }
     });
   }

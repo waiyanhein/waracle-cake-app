@@ -12,12 +12,12 @@ import { toCakeResDto } from '../resDtos/cakeResDto';
 const saveCakeReqDtoSchema = z
   .object({
     name: z
-      .string()
+      .string({ message: 'Name is required' })
       .trim()
       .min(1, { message: 'Name is required' })
       .max(30, { message: 'Name must be max 30 characters' }),
     comment: z
-      .string()
+      .string({ message: 'Comment is required' })
       .trim()
       .min(1, { message: 'Comment is required' })
       .max(200, { message: 'Comment must be max 200 characters' }),
@@ -29,9 +29,9 @@ const saveCakeReqDtoSchema = z
         return val;
       },
       z
-        .number()
-        .min(1, { message: 'Yum factor is required' })
-        .max(10, { message: 'Yum factor must be max 10' }),
+        .number({ message: 'Yum factor is required' })
+        .min(1, { message: 'Yum factor must be a number between 1 and 10' })
+        .max(10, { message: 'Yum factor must be a number between 1 and 10' }),
     ),
   })
   .strict();
@@ -70,7 +70,7 @@ export class CakeController extends Controller {
     if (isNil(req.files)) {
       throw this.buildRequestValidationError({
         field: 'imageFiles',
-        error: 'Image files are required',
+        error: 'Image is required',
       });
     }
     if (Array.isArray(req.files)) {
@@ -82,7 +82,7 @@ export class CakeController extends Controller {
     if (!req.files.imageFiles.length) {
       throw this.buildRequestValidationError({
         field: 'imageFiles',
-        error: 'Image files are required',
+        error: 'Image is required',
       });
     }
     imagePaths = req.files.imageFiles.map((f) => f.path);

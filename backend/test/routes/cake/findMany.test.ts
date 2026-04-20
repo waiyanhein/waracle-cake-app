@@ -10,11 +10,11 @@ import { Cake } from "../../../src/entities/cake";
  * @TODO - add more tests to cover the edge-cases such as "it should use 1 as default page if the page is not provided"
  */
 describe("GET /cakes", () => {
+    withDatabaseEach();
     let app: Express;
     beforeAll(async () => {
         app = await initTestApp();
     });
-    withDatabaseEach();
 
     it(`should return the cakes in the correct JSON structure`, async () => {
         const cakes = await createTestCakes([
