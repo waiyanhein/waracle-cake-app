@@ -1,3 +1,4 @@
+import { isNil } from 'lodash';
 import { Button } from '../../../components/form/Button';
 import type { CakeResDto } from '../../../resDtos/cakeResDto';
 
@@ -14,11 +15,13 @@ export const CakeDetail = ({
     <div className="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl">
       {/* Image */}
       <div className="relative">
-        <img
-          src={cake.imageUrl}
-          alt={cake.name}
-          className="w-full object-cover"
-        />
+        {isNil(cake.imageUrl) ? null : (
+          <img
+            src={cake.imageUrl}
+            alt={cake.name}
+            className="w-full object-cover"
+          />
+        )}
 
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/0 to-transparent" />

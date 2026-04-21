@@ -7,7 +7,7 @@ type Props = {
   placeholder?: string;
   error?: React.ReactNode;
   accept?: string;
-  previewImageUrl?: string;
+  previewImageUrl?: string | null;
   multiple?: boolean;
   disabled?: boolean;
 };
@@ -49,7 +49,10 @@ export const FilePickerField = ({
       ${hasError ? 'border-red-500' : 'border-gray-200'}
     `}
         >
-          <img src={previewImageUrl} className="w-full h-40 object-cover" />
+          <img
+            src={previewImageUrl ?? undefined}
+            className="w-full h-40 object-cover"
+          />
         </div>
       ) : null}
 

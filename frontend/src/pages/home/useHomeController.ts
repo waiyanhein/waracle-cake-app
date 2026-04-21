@@ -76,11 +76,24 @@ export const useHomeController = () => {
   const onCreateFormSubmit: SubmitHandler<CakeForm> = async (data) => {
     createForm.clearErrors();
     try {
+      if (isNil(data.yumFactor)) {
+        createForm.setError('yumFactor', {
+          message: 'Yum factor is required',
+        });
+        return;
+      }
+      const imageFile = data.imageFile?.[0];
+      if (isNil(imageFile)) {
+        createForm.setError('imageFile', {
+          message: 'Image is required',
+        });
+        return;
+      }
       await api.cake.createOne({
         name: data.name,
         comment: data.comment,
         yumFactor: data.yumFactor,
-        imageFile: data.imageFile?.[0],
+        imageFile,
       });
       createForm.reset();
       setIsCreateModalOpen(false);
@@ -123,6 +136,12 @@ export const useHomeController = () => {
     }
     editForm.clearErrors();
     try {
+      if (isNil(data.yumFactor)) {
+        editForm.setError('yumFactor', {
+          message: 'Yum factor is required',
+        });
+        return;
+      }
       await api.cake.updateOne(cakeToUpdate.id, {
         name: data.name,
         comment: data.comment,

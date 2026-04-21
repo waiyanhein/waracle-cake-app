@@ -12,6 +12,21 @@ import { isNil } from 'lodash';
 export const HomePage = () => {
   const c = useHomeController();
 
+  const renderPagination = () => {
+    const data = c.cakesQuery.data;
+    if (isNil(data)) {
+      return null;
+    }
+
+    return (
+      <ResponsivePagination
+        current={data.page}
+        total={data.totalPages}
+        onPageChange={c.onPageChange}
+      />
+    );
+  };
+
   const renderCakes = () => {
     if (c.cakesQuery.isLoading) {
       return <Loading />;
@@ -47,11 +62,7 @@ export const HomePage = () => {
             );
           })}
         </div>
-        <ResponsivePagination
-          current={c.cakesQuery.data?.page}
-          total={c.cakesQuery.data?.totalPages}
-          onPageChange={c.onPageChange}
-        />
+        {renderPagination()}
       </>
     );
   };
@@ -82,7 +93,7 @@ export const HomePage = () => {
           />
         </div>
       </PopUpModal>
-      {c.isEditModalOpen ? (
+      {!isNil(c.cakeToUpdate) ? (
         <PopUpModal
           isOpen={c.isEditModalOpen}
           onRequestClose={c.closeEditModal}

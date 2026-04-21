@@ -1,3 +1,4 @@
+import { isNil } from 'lodash';
 import type { CakeResDto } from '../../../resDtos/cakeResDto';
 
 export const CakeCard = ({
@@ -15,11 +16,13 @@ export const CakeCard = ({
     <div className="group bg-white/80 backdrop-blur rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:-translate-y-1">
       {/* Image */}
       <div className="relative overflow-hidden">
-        <img
-          src={cake.imageUrl}
-          alt={cake.name}
-          className="w-full h-44 object-cover transition-transform duration-500 group-hover:scale-110"
-        />
+        {!isNil(cake.imageUrl) ? (
+          <img
+            src={cake.imageUrl}
+            alt={cake.name}
+            className="w-full h-44 object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+        ) : null}
 
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/0 to-transparent opacity-70" />
