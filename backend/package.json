@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "rm -rf dist tsconfig.tsbuildinfo && tsc",
     "format:code": "eslint \"{src,test}/**/*.{ts,tsx}\" --fix",
     "start": "ts-node-dev --respawn --transpile-only src/index.ts",
     "typeorm": "typeorm-ts-node-commonjs",
