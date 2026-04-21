@@ -25,11 +25,13 @@ done
 
 cd backend
 
+echo "Building backend..."
+npm run build
+
 echo "📦 Running migrations..."
 npm run migration:run
 
 echo "🚀 Starting API..."
-npm run build
 
 echo -e "\033[32mFrontend is running on http://localhost:3001 and API is running on http://localhost:3000\033[0m"
 npm run start:prod

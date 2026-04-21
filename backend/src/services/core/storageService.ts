@@ -9,7 +9,7 @@ export class StorageService {
   public getFileUrl = (filePath: string): string => {
     return `${this.configService.getAppConfig().assetDomain}/${filePath}`;
   };
-
+  
   /**
    * @notes - to make it easier to adapt to new storage service.
    * For example, if we switch to S3, we just need to update this service.
