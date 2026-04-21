@@ -6,11 +6,18 @@ export type ApiValidationErrorResponse<T = Record<string, string[]>> = {
   errors: T;
 };
 
-type SaveFormData = {
+type CreateReqData = {
   name: string;
   comment: string;
   yumFactor: number;
   imageFile: File;
+};
+
+type UpdateReqData = {
+  name: string;
+  comment: string;
+  yumFactor: number;
+  imageFile?: File;
 };
 
 export class ApiValidationError<T = Record<string, string[]>> extends Error {
@@ -79,7 +86,7 @@ export const useApi = () => {
         method: `GET`,
       });
     },
-    createOne: async (data: SaveFormData): Promise<void> => {
+    createOne: async (data: CreateReqData): Promise<void> => {
       const formData = new FormData();
       formData.append('name', data.name);
       formData.append('comment', data.comment);
@@ -91,12 +98,14 @@ export const useApi = () => {
         body: formData,
       });
     },
-    updateOne: async (id: number, data: SaveFormData) => {
+    updateOne: async (id: number, data: UpdateReqData) => {
       const formData = new FormData();
       formData.append('name', data.name);
       formData.append('comment', data.comment);
       formData.append('yumFactor', data.yumFactor.toString());
-      formData.append('imageFiles', data.imageFile);
+      if (!isNil(data.imageFile)) {
+        formData.append('imageFiles', data.imageFile);
+      }
       await makeApiRequest({
         path: `/cakes/${id}`,
         method: `PUT`,

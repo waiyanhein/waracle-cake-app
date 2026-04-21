@@ -17,7 +17,7 @@ export const CakeDetail = ({
         <img
           src={cake.imageUrl}
           alt={cake.name}
-          className="w-full h-56 object-cover"
+          className="w-full object-cover"
         />
 
         {/* Gradient overlay */}

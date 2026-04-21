@@ -1,6 +1,7 @@
 import { Service } from 'typedi';
 import { ConfigService } from './configService';
-import { unlink } from 'fs/promises';
+import { unlink, access } from 'fs/promises';
+import { constants } from 'fs';
 @Service()
 export class StorageService {
   constructor(private readonly configService: ConfigService) {}
@@ -14,6 +15,19 @@ export class StorageService {
    * For example, if we switch to S3, we just need to update this service.
    */
   public deleteFile = (filePath: string): Promise<void> => {
-    return unlink(filePath);
+    return this.fileExists(filePath).then((exists) => {
+      if (exists) {
+        return unlink(filePath);
+      }
+    });
+  };
+
+  private fileExists = async (filePath: string): Promise<boolean> => {
+    try {
+      await access(filePath, constants.F_OK);
+      return true;
+    } catch {
+      return false;
+    }
   };
 }

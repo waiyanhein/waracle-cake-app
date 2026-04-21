@@ -73,31 +73,7 @@ export const useHomeController = () => {
     mutationFn: () => api.cake.deleteOne(cakeToDelete?.id ?? 0),
   });
 
-  const validateForm = (data: CakeForm) => {
-    if (!data.imageFile?.length) {
-      createForm.setError('imageFile', { message: 'Image is required' });
-      return false;
-    }
-    if (!data.name) {
-      createForm.setError('name', { message: 'Name is required' });
-      return false;
-    }
-    if (!data.comment) {
-      createForm.setError('comment', { message: 'Comment is required' });
-      return false;
-    }
-    if (!data.yumFactor) {
-      createForm.setError('yumFactor', { message: 'Yum factor is required' });
-      return false;
-    }
-    return true;
-  };
-
   const onCreateFormSubmit: SubmitHandler<CakeForm> = async (data) => {
-    const isValid = validateForm(data);
-    if (!isValid) {
-      return;
-    }
     createForm.clearErrors();
     try {
       await api.cake.createOne({
@@ -143,10 +119,6 @@ export const useHomeController = () => {
 
   const onEditFormSubmit: SubmitHandler<CakeForm> = async (data) => {
     if (isNil(cakeToUpdate)) {
-      return;
-    }
-    const isValid = validateForm(data);
-    if (!isValid) {
       return;
     }
     editForm.clearErrors();

@@ -7,7 +7,7 @@ const customStyles = {
     zIndex: 999, // 🔥 THIS is the important part
   },
   content: {
-    top: '45%',
+    top: '47%',
     left: '50%',
     right: 'auto',
     bottom: 'auto',

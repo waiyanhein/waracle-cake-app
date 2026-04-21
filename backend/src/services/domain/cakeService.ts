@@ -126,6 +126,13 @@ export class CakeService {
           yumFactor: data.yumFactor,
         });
 
+        /**
+         * @important - only update the images if the new image is uploaded
+         */
+        if (!data.imagePaths.length) {
+          return;
+        }
+
         await this.cakeImageRepo.delete({
           cakeId: id,
         });
@@ -138,15 +145,14 @@ export class CakeService {
             };
           }),
         );
-      });
-
-      if (cake.images.length) {
-        const deleteFilePromises: Promise<void>[] = [];
-        for (const image of cake.images) {
-          deleteFilePromises.push(this.storageService.deleteFile(image.path));
+        if (cake.images.length) {
+          const deleteFilePromises: Promise<void>[] = [];
+          for (const image of cake.images) {
+            deleteFilePromises.push(this.storageService.deleteFile(image.path));
+          }
+          await Promise.all(deleteFilePromises);
         }
-        await Promise.all(deleteFilePromises);
-      }
+      });
     } catch (error) {
       // delete the uploaded images if something went wrong
       if (data.imagePaths.length) {

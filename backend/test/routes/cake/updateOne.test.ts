@@ -105,6 +105,29 @@ describe("PUT /cakes/:id", () => {
         assertFileExistsInStorage(cakeImageToIgnoreBefore.path);
     });
 
+    it(`should not delete the pre-existing image if a new image is not uploaded`, async () => {
+        const cake = await createTestCake();
+        const preExistingImagePath = await seedImageFileInTestStorage();
+        const cakeImage = await createTestCakeImage({
+            cakeId: cake.id,
+            path: preExistingImagePath,
+        });
+        const reqDto = generateReqDto();
+        await supertest(app)
+        .put(`/cakes/${cake.id}`)
+        .field(`name`, reqDto.name)
+        .field(`comment`, reqDto.comment)
+        .field(`yumFactor`, reqDto.yumFactor.toString())
+        .expect(200);
+
+        const cakeImages = await cakeImageRepository.find();
+        expect(cakeImages.length).toBe(1);
+        const cakeImageAfter = cakeImages[0];
+        expect(cakeImageAfter).toEqual(cakeImage);
+        assertFileExistsInStorage(cakeImageAfter.path);
+        expect(deleteFileSpy).not.toHaveBeenCalled();
+    });
+
     it(`should return not found error if the cake that matches the provided id does not exist`, async () => {
         const reqDto = generateReqDto();
         await supertest(app)
