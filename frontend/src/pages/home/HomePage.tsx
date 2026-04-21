@@ -40,7 +40,7 @@ export const HomePage = () => {
               <CakeCard
                 onView={c.openCakeViewModal}
                 onDelete={c.openDeleteModal}
-                onEdit={() => {}}
+                onEdit={c.openEditModal}
                 cake={cake}
                 key={cake.id}
               />
@@ -82,6 +82,21 @@ export const HomePage = () => {
           />
         </div>
       </PopUpModal>
+      {c.isEditModalOpen ? (
+        <PopUpModal
+          isOpen={c.isEditModalOpen}
+          onRequestClose={c.closeEditModal}
+        >
+          <div className="p-5">
+            <CakeFormModal
+              form={c.editForm}
+              cake={c.cakeToUpdate}
+              onSubmit={c.onEditFormSubmit}
+              onCancel={c.closeEditModal}
+            />
+          </div>
+        </PopUpModal>
+      ) : null}
       {!isNil(c.cakeBeingViewed) ? (
         <PopUpModal
           isOpen={c.isCakeViewModalOpen}
@@ -89,7 +104,7 @@ export const HomePage = () => {
         >
           <CakeDetail
             cake={c.cakeBeingViewed}
-            onDelete={() => {}}
+            onDelete={c.openDeleteModal}
             onClose={c.closeCakeViewModal}
           />
         </PopUpModal>

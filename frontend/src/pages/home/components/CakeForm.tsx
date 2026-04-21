@@ -5,12 +5,16 @@ import { FormInputField } from '../../../components/form/FormInputField';
 import { FormTextarea } from '../../../components/form/FormTextarea';
 import { SegmentedField } from '../../../components/form/SegmentedField';
 import { Button } from '../../../components/form/Button';
+import type { CakeResDto } from '../../../resDtos/cakeResDto';
+import { isNil } from 'lodash';
 
 export const CakeFormModal = ({
   form,
   onSubmit,
   onCancel,
+  cake,
 }: {
+  cake?: CakeResDto;
   onSubmit: (data: CakeForm) => void;
   onCancel: () => void;
   form: UseFormReturn<CakeForm>;
@@ -21,7 +25,9 @@ export const CakeFormModal = ({
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       {/* Title */}
       <div>
-        <h2 className="text-sm font-medium">Add New Cake</h2>
+        <h2 className="text-sm font-medium">
+          {!isNil(cake) ? 'Edit Cake' : 'Add New Cake'}
+        </h2>
         <p className="text-xs text-gray-500">Fill in the details below</p>
       </div>
 
@@ -31,6 +37,7 @@ export const CakeFormModal = ({
         register={form.register('imageFile')}
         error={form.formState.errors.imageFile?.message}
         placeholder={`Upload an image for the cake`}
+        previewImageUrl={cake?.imageUrl}
       />
 
       <FormInputField
