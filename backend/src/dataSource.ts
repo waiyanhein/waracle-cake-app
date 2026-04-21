@@ -7,13 +7,18 @@ import { ConfigService } from './services/core/configService';
 initDotenv();
 
 const configService = Container.get(ConfigService);
+
+const config = configService.getAppConfig();
+const entities = config.env === 'production' ? ['dist/entities/*.js'] : ['src/entities/*.ts'];
+const migrations = config.env === 'production' ? ['dist/migrations/*.js'] : ['src/migrations/*.ts'];
+
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  url: configService.getAppConfig().database.url,
+  url: config.database.url,
   synchronize: false,
-  logging: true,
-  entities: ['src/entities/*.ts'],
-  migrations: ['src/migrations/*.ts'],
+  logging: config.env !== 'production',
+  entities,
+  migrations,
 });
 
 export const initializeDatabase = async () => {

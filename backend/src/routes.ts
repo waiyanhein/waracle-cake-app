@@ -8,9 +8,10 @@ import { Controller } from './controllers/controller';
 
 export const configureRoutes = (app: Express) => {
   const configService = Container.get(ConfigService);
+  const config = configService.getAppConfig();
   app.use(
-    '/storage',
-    express.static(path.join(process.cwd(), configService.getAppConfig().storage.directory)),
+    `/${config.storage.directory}`,
+    express.static(path.join(process.cwd(), config.storage.directory)),
   );
 
   const router = Router();

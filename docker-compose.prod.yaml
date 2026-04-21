@@ -1,0 +1,42 @@
+services:
+  frontend:
+    container_name: prod_ui
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    networks:
+      - prod-cake-app-network
+
+  db:
+    image: postgres:15
+    platform: linux/amd64 # This is added to get rid of the warning appearing on Apple Silicon M3.
+    container_name: prod_cake_db
+    restart: always
+    shm_size: 128mb 
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cake_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "root"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 30s
+    ports:
+      - '5432:5432'
+    volumes:
+      - prod_postgres_data:/var/lib/postgresql/data
+    networks:
+      - prod-cake-app-network
+
+volumes:
+  prod_postgres_data:
+  storage_data:
+    name: storage_data
+
+networks:
+  prod-cake-app-network:
+    driver: bridge

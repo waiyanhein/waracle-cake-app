@@ -1,0 +1,27 @@
+{
+  "name": "waracle-cake-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "up:dev": "docker-compose up -d --build",
+    "down:dev": "docker-compose down",
+    "up:test": "docker-compose -f docker-compose.test.yaml up -d --build",
+    "down:test": "docker-compose -f docker-compose.test.yaml down",
+    "start": "sh start_prod.sh",
+    "down": "docker-compose -f docker-compose.prod.yaml down -v",
+    "run-migration:dev": "npm run migration:run --prefix backend",
+    "start:be-dev": "npm run dev --prefix backend",
+    "start:fe-dev": "npm run dev --prefix frontend",
+    "test": "npm run test --prefix backend",
+    "format:code": "npm run format:code --prefix backend && npm run format:code --prefix frontend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com-personal:waiyanhein/waracle-cake-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

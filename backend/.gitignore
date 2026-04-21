@@ -6,3 +6,5 @@ node_modules
 div
 storage/*
 test_storage/*
+prod_storage
+prod_storage/*

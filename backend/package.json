@@ -6,7 +6,8 @@
   "scripts": {
     "build": "rm -rf dist tsconfig.tsbuildinfo && tsc",
     "format:code": "eslint \"{src,test}/**/*.{ts,tsx}\" --fix",
-    "start": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "start:prod": "NODE_ENV=production node dist/index.js",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:sync": "npm run typeorm -- migration:generate src/migrations/init -d src/dataSource.ts",
     "migration:run": "npm run typeorm -- migration:run -d src/dataSource.ts",
